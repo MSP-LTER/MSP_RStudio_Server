@@ -1,0 +1,29 @@
+#!/bin/bash
+# install R
+sudo amazon-linux-extras install R4
+sudo yum install -y R # may be part of the above command
+# install RStudio-Server
+wget https://download2.rstudio.org/server/centos7/x86_64/rstudio-server-rhel-2022.02.3-492-x86_64.rpm
+sudo yum install -y --nogpgcheck rstudio-server-rhel-2022.02.3-492-x86_64.rpm
+sudo yum install -y curl-devel
+# add user
+sudo useradd username
+sudo echo username:password | chpasswd
+
+## GDAL:
+# from https://gist.github.com/mojodna/2f596ca2fca48f08438e
+# and https://github.com/aws/elastic-beanstalk-roadmap/issues/199
+# and https://gist.github.com/HerveNivon/fe3a327bc28b142e51beb38ef11844c0
+sudo yum -y update
+sudo yum-config-manager --enable epel
+sudo amazon-linux-extras install epel -y
+sudo yum -y install make automake gcc gcc-c++ libcurl-devel proj-devel geos-devel proj-nad proj-epsg
+
+GDAL_VERSION=2.4.4
+cd /tmp
+curl -L "http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz" | tar zxf -
+cd "gdal-${GDAL_VERSION}/"
+./configure --prefix=/usr/local --without-python
+make -j4
+sudo make install
+cp /usr/local/lib/libgdal.so.20* /usr/lib64/
