@@ -27,3 +27,11 @@ cd "gdal-${GDAL_VERSION}/"
 make -j4
 sudo make install
 cp /usr/local/lib/libgdal.so.20* /usr/lib64/
+
+### link shared data folder to all users in RStudio server
+for u in $(ls /home | grep -v shareddata | grep -v ec2-user); do
+  sudo su $u -c "ln -s /home/shareddata /home/$u";
+done
+
+### move files to shared data
+sudo mv /home/username/example.csv /home/shareddata
